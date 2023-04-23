@@ -24,12 +24,12 @@ n_input = 784
 n_hidden1 = 1024
 n_hidden2 = 512
 n_hidden3 = 512
-n_hidden4 = 512
+n_hidden4 = 256
 n_output = 10
 
 # 하이퍼 매개변수 설정
 batch_size = 256
-n_epoch = 1
+n_epoch = 20
 k = 10
 
 # 모델을 설계해주는 함수(모델을 나타내는 객체 model을 반환)
@@ -67,21 +67,20 @@ def cross_validation(opt):
 
 
 # 옵티마이저 4개에 대해 교차 검증을 수행
-# acc_sgd = cross_validation(tf.keras.optimizers.legacy.SGD())
+acc_sgd = cross_validation(tf.keras.optimizers.legacy.SGD())
 acc_adam = cross_validation(tf.keras.optimizers.legacy.Adam())
-# acc_adagrad = cross_validation(tf.keras.optimizers.legacy.Adagrad())
-# acc_rmsprop = cross_validation(tf.keras.optimizers.legacy.RMSprop())
+acc_adagrad = cross_validation(tf.keras.optimizers.legacy.Adagrad())
+acc_rmsprop = cross_validation(tf.keras.optimizers.legacy.RMSprop())
 
 # 옵티마이저 4개의 정확률을 비교
-# print('SGD:', np.array(acc_sgd).mean())
+print('SGD:', np.array(acc_sgd).mean())
 print('Adam:', np.array(acc_adam).mean())
-# print('Amsgrad:', np.array(acc_adagrad).mean())
-# print('RMSprop:', np.array(acc_rmsprop).mean())
+print('Amsgrad:', np.array(acc_adagrad).mean())
+print('RMSprop:', np.array(acc_rmsprop).mean())
 
 
 # 옵티마이저 4개의 정확률을 박스 플롯으로 비교
-# plt.boxplot([acc_sgd, acc_adam, acc_adagrad, acc_rmsprop],
-#             labels=['SGD', 'Adam', 'Adagrad', 'RMSprop'])
-plt.boxplot([acc_adam],
-            labels=['Adam'])
+plt.boxplot([acc_sgd, acc_adam, acc_adagrad, acc_rmsprop],
+            labels=['SGD', 'Adam', 'Adagrad', 'RMSprop'])
+
 plt.grid()

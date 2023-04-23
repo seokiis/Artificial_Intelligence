@@ -7,7 +7,6 @@ print(d.DESCR)  # 내용을 출력
 for i in range(0, len(d.data)):  # 샘플을 순서대로 출력
     print(i+1, d.data[i], d.target[i])
 
-
 s = svm.SVC(gamma=0.1, C=10)  # svm 분류 모델 SVC 객체 생성하고
 s.fit(d.data, d.target)  # iris 데이터로 학습
 
