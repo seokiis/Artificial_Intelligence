@@ -29,8 +29,8 @@ n_output = 10
 
 # 하이퍼 매개변수 설정
 batch_size = 256
-n_epoch = 20
-k = 5
+n_epoch = 1
+k = 10
 
 # 모델을 설계해주는 함수(모델을 나타내는 객체 model을 반환)
 
