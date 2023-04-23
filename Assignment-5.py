@@ -8,23 +8,22 @@ import time
 ################
 # 본인 코드 작성
 ################
-
 # MNIST 데이터셋을 읽고 훈련 집합과 테스트 집합으로 분할
 mnist = fetch_openml('mnist_784')
-mnist.data = mnist.data/255.0
+
 x_train = mnist.data[:60000]
 x_test = mnist.data[60000:]
 y_train = np.int16(mnist.target[:60000])
 y_test = np.int16(mnist.target[60000:])
 
-# 다층 퍼셉트론을 교차 검증으로 성능 평가하기(소요 시간 측정 포함)
-start = time.time()
-mlp = MLPClassifier(learning_rate=0.001, batch_size=32,
-                    max_iter=20, solver='sgd')
+# 다층 퍼셉트론을 교차 검증으로 성능 평가 (소요 시간 측정 포함)
+start = time.time()  # 시작 시각
+mlp = MLPClassifier(learning_rate_init=0.001,
+                    batch_size=512, max_iter=20, solver='sgd')
 prange = range(50, 1001, 200)
 train_score, test_score = validation_curve(
-    mlp, x_train, y_train, param_name='hidden_layer_sizes', param_range=prange, cv=5, scoring='accuracy', n_jobs=4)
-end = time.time()
+    mlp, x_train, y_train, param_name="hidden_layer_sizes", param_range=prange, cv=5, scoring="accuracy", n_jobs=4)
+end = time.time()  # 끝난 시각
 print("하이퍼 매개변수 최적화에 걸린 시간은", end-start, "초입니다.")
 
 # 교차 검증 결과의 평균과 분산 구하기
@@ -33,7 +32,7 @@ train_std = np.std(train_score, axis=1)
 test_mean = np.mean(test_score, axis=1)
 test_std = np.std(test_score, axis=1)
 
-# 그래프 그리기
+# 성능 그래프 그리기
 plt.plot(prange, train_mean, label="Train score", color="r")
 plt.plot(prange, test_mean, label="Test score", color="b")
 plt.fill_between(prange, train_mean-train_std, train_mean +
@@ -48,27 +47,26 @@ plt.ylim(0.9, 1.01)
 plt.grid(axis='both')
 plt.show()
 
-# 최적의 은닉 노드 개수
-best_number_nodes = prange[np.argmax(test_mean)]
+best_number_nodes = prange[np.argmax(test_mean)]  # 최적의 은닉 노드 개수
 print("\n최적의 은닉층의 노드 개수는", best_number_nodes, "개입니다.\n")
 
 # 최적의 은닉 노드 개수로 모델링
 mlp_test = MLPClassifier(hidden_layer_sizes=(
-    best_number_nodes), learning_rate_init=0.001, batch_size=32, max_iter=20, solver='sgd')
+    best_number_nodes), learning_rate_init=0.001, batch_size=512, max_iter=20, solver='sgd')
 mlp_test.fit(x_train, y_train)
 
 # 테스트 집합으로 예측
 res = mlp_test.predict(x_test)
 
 # 혼동 행렬
-conf = np.zeros((10, 10))
+conf = np.zeros((10, 10), dtype=np.int16)
 for i in range(len(res)):
-    conf[res[i], y_test[i]] += 1
+    conf[res[i]][y_test[i]] += 1
 print(conf)
 
-# 정확률
+# 정확률 계산
 no_correct = 0
 for i in range(10):
     no_correct += conf[i][i]
 accuracy = no_correct/len(res)
-print("테스트 집합에 대한 정확률은", accuracy*100, "%")
+print("테스트 집합에 대한 정확률은", accuracy*100, "%입니다.")
